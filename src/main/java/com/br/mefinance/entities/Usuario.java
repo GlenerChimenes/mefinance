@@ -3,7 +3,6 @@ package com.br.mefinance.entities;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -20,7 +19,7 @@ public class Usuario {
 
     @ManyToMany
     @JoinTable(name = "tb_usuario_role",
-            joinColumns = @JoinColumn(name = "user_id"),
+            joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
@@ -64,28 +63,28 @@ public class Usuario {
         this.roles = roles;
     }
 
-    public void addRole(Role role){
-       roles.add(role);
-    }
-
-    public boolean hasRole(String roleName) {
-        for (Role role : roles){
-            if (role.getAuthority().equals(roleName)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+//    public void addRole(Role role){
+//       roles.add(role);
+//    }
+//
+//    public boolean hasRole(String roleName) {
+//        for (Role role : roles){
+//            if (role.getAuthority().equals(roleName)){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Usuario usuario = (Usuario) o;
+//        return Objects.equals(id, usuario.id);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hashCode(id);
+//    }
 }

@@ -2,7 +2,9 @@ package com.br.mefinance.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 @Entity
@@ -14,6 +16,9 @@ public class Role {//implements GrantedAuthority {
     private Long id;
     private String authority;
 
+    @ManyToMany(mappedBy = "roles")
+    private Set<Usuario> usuarios = new HashSet<>();
+
     public Role() {
     }
 
@@ -21,6 +26,14 @@ public class Role {//implements GrantedAuthority {
         super();
         this.id = id;
         this.authority = authority;
+    }
+
+    public Set<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(Set<Usuario> usuarios) {
+        this.usuarios = usuarios;
     }
 
     public Long getId() {
