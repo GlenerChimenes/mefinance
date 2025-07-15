@@ -2,8 +2,7 @@ package com.br.mefinance.entities;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_usuario")
@@ -16,6 +15,9 @@ public class Usuario {
     @Column(unique = true)
     private String email;
     private String senha;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Gasto> gastos = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "tb_usuario_role",
@@ -63,28 +65,36 @@ public class Usuario {
         this.roles = roles;
     }
 
-//    public void addRole(Role role){
-//       roles.add(role);
-//    }
-//
-//    public boolean hasRole(String roleName) {
-//        for (Role role : roles){
-//            if (role.getAuthority().equals(roleName)){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Usuario usuario = (Usuario) o;
-//        return Objects.equals(id, usuario.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hashCode(id);
-//    }
+    public void addRole(Role role){
+       roles.add(role);
+    }
+
+    public boolean hasRole(String roleName) {
+        for (Role role : roles){
+            if (role.getAuthority().equals(roleName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Gasto> getGastos() {
+        return gastos;
+    }
+
+    public void setGastos(List<Gasto> gastos) {
+        this.gastos = gastos;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

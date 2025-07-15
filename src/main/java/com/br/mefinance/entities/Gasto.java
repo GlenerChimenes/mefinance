@@ -1,5 +1,6 @@
 package com.br.mefinance.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,12 +18,16 @@ public class Gasto {
 
     private BigDecimal valor;
 
+    private Integer periodo;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name = "data_vencimento")
     private LocalDateTime dataVencimento;
 
-//    @ManyToOne
-//    @JoinColumn(name = "usuario_id")
-//    private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    @JsonIgnore
+    private Usuario usuario;
 
     public Long getId() {
         return id;
@@ -56,11 +61,19 @@ public class Gasto {
         this.dataVencimento = dataVencimento;
     }
 
-//    public Usuario getUsuario() {
-//        return usuario;
-//    }
-//
-//    public void setUsuario(Usuario usuario) {
-//        this.usuario = usuario;
-//    }
+    public Integer getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(Integer periodo) {
+        this.periodo = periodo;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }
