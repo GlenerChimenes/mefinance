@@ -1,5 +1,6 @@
 package com.br.mefinance.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -17,6 +18,7 @@ public class Usuario {
     private String senha;
 
     @OneToMany(mappedBy = "usuario")
+    @JsonIgnore
     private List<Gasto> gastos = new ArrayList<>();
 
     @ManyToMany

@@ -1,7 +1,7 @@
 package com.br.mefinance.controllers;
 
 import com.br.mefinance.dto.UsuarioDTO;
-import com.br.mefinance.services.UsuarioServico;
+import com.br.mefinance.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 
     @Autowired
-    UsuarioServico usuarioServico;
+    UsuarioService usuarioServico;
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UsuarioDTO> buscarUsuarioId(@PathVariable Long id) {

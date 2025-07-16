@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UsuarioServico {
+public class UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
