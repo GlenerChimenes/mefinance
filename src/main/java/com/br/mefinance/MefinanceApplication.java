@@ -1,10 +1,16 @@
 package com.br.mefinance;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-public class MefinanceApplication {
+public class MefinanceApplication implements CommandLineRunner {
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 
@@ -12,4 +18,9 @@ public class MefinanceApplication {
 		System.out.println("testando...");
 	}
 
+
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("ENCODE =  " + passwordEncoder.encode("123456"));
+	}
 }

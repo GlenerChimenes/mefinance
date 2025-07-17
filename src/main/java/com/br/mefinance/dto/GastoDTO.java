@@ -2,6 +2,9 @@ package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.entities.Usuario;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,11 +12,21 @@ import java.time.LocalDateTime;
 public class GastoDTO {
 
     private Long          id;
-    private String        descricao;
-    private BigDecimal    valor;
-    private Integer       periodo;
+
+    @NotBlank(message = "Campo descricao requerido")
+    private String descricao;
+
+    @Positive(message = "Valor deve ser positivo")
+    private BigDecimal valor;
+
+    @NotBlank(message = "Campo periodo requerido")
+    private Integer periodo;
+
+    @NotNull(message = "Data de vencimento é obrigatoria")
     private LocalDateTime dataVencimento;
-    private Usuario       usuario;
+
+    @NotNull(message = "Usuario é obrigatória")
+    private Usuario usuario;
 
     public GastoDTO() {
     }

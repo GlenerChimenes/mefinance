@@ -1,7 +1,7 @@
-INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Alex','alex@gmail.com', '123456');
-INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('João','joao@gmail.com', '123456');
-INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Ana','ana@gmail.com', '123456');
-INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Maria','maria@gmail.com', '123456');
+INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Alex','alex@gmail.com', '$2a$10$2qhPu70lsjB8.KyuggwD/eUXyChTTunA7aQ0whq2D1gukDFuNw2Fy');
+INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('João','joao@gmail.com', '$2a$10$2qhPu70lsjB8.KyuggwD/eUXyChTTunA7aQ0whq2D1gukDFuNw2Fy');
+INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Ana','ana@gmail.com', '$2a$10$2qhPu70lsjB8.KyuggwD/eUXyChTTunA7aQ0whq2D1gukDFuNw2Fy');
+INSERT INTO TB_USUARIO (nome, email, senha) VALUES ('Maria','maria@gmail.com', '$2a$10$2qhPu70lsjB8.KyuggwD/eUXyChTTunA7aQ0whq2D1gukDFuNw2Fy');
 
 
 INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, usuario_id) VALUES ('Fatura Sicoob', 1500.00, 072025, '2025-07-15 10:30:00', 4);

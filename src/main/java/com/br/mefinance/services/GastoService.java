@@ -5,6 +5,7 @@ import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.repositorys.GastoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,5 +20,21 @@ public class GastoService {
         List<Gasto> entity = repository.findByUsuarioIdAndPeriodo(usuarioId, periodo);
        return entity.stream()
                 .map(o -> new GastoDTO(o)).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public GastoDTO inserir(GastoDTO dto) {
+        Gasto entity = new Gasto();
+        copiaDtpParaEntidade(dto, entity);
+        entity = repository.save(entity);
+        return new GastoDTO(entity);
+    }
+
+    private void copiaDtpParaEntidade(GastoDTO dto, Gasto entity) {
+        entity.setDescricao(dto.getDescricao());
+        entity.setDataVencimento(dto.getDataVencimento());
+        entity.setValor(dto.getValor());
+        entity.setPeriodo(dto.getPeriodo());
+        entity.setUsuario(dto.getUsuario());
     }
 }
