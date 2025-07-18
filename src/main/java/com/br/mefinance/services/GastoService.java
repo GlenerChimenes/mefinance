@@ -16,8 +16,8 @@ public class GastoService {
     @Autowired
     private GastoRepository repository;
 
-    public List<GastoDTO> buscarGastosUsuario(Long usuarioId, Integer periodo) {
-        List<Gasto> entity = repository.findByUsuarioIdAndPeriodo(usuarioId, periodo);
+    public List<GastoDTO> buscarGastosUsuario(Long userId, Integer periodo) {
+        List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodo);
        return entity.stream()
                 .map(o -> new GastoDTO(o)).collect(Collectors.toList());
     }
@@ -35,6 +35,6 @@ public class GastoService {
         entity.setDataVencimento(dto.getDataVencimento());
         entity.setValor(dto.getValor());
         entity.setPeriodo(dto.getPeriodo());
-        entity.setUsuario(dto.getUsuario());
+        entity.setUser(dto.getUsuario());
     }
 }

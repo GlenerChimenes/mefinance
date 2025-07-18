@@ -1,12 +1,12 @@
 package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
-import com.br.mefinance.entities.Usuario;
+import com.br.mefinance.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsuarioDTO {
+public class UserDTO {
 
     private Long id;
     private String nome;
@@ -17,21 +17,21 @@ public class UsuarioDTO {
 
   //  Set<Role> roles = new HashSet<>();
 
-    public UsuarioDTO() {
+    public UserDTO() {
     }
 
-    public UsuarioDTO(Long id, String nome, String email, String senha) {
+    public UserDTO(Long id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
     }
 
-    public UsuarioDTO(Usuario entity) {
+    public UserDTO(User entity) {
         this.id = entity.getId();
         this.nome = entity.getNome();
         this.email = entity.getEmail();
-        this.senha = entity.getSenha();
+        this.senha = entity.getPassword();
        // this.gastos = entity.getGastos(); TODO Não preciso trazer os gastos com usuario. Busco no controle de gastos.
     }
 

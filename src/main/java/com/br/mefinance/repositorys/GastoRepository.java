@@ -9,5 +9,5 @@ import java.util.List;
 public interface GastoRepository extends CrudRepository<Gasto, Long> {
 
 
-    List<Gasto> findByUsuarioIdAndPeriodo(@Param("usuarioId") Long usuarioId, @Param("periodo") Integer periodo);
+    List<Gasto> findByUserIdAndPeriodo(@Param("user_id") Long userId, @Param("periodo") Integer periodo);
 }

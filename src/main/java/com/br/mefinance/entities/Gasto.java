@@ -25,9 +25,9 @@ public class Gasto {
     private LocalDateTime dataVencimento;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "user_id")
     @JsonIgnore
-    private Usuario usuario;
+    private User user;
 
     public Long getId() {
         return id;
@@ -69,11 +69,11 @@ public class Gasto {
         this.periodo = periodo;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

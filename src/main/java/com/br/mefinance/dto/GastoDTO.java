@@ -1,7 +1,7 @@
 package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
-import com.br.mefinance.entities.Usuario;
+import com.br.mefinance.entities.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,19 +25,19 @@ public class GastoDTO {
     @NotNull(message = "Data de vencimento é obrigatoria")
     private LocalDateTime dataVencimento;
 
-    @NotNull(message = "Usuario é obrigatória")
-    private Usuario usuario;
+    @NotNull(message = "User é obrigatória")
+    private User usuario;
 
     public GastoDTO() {
     }
 
-    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDateTime dataVencimento, Usuario usuario) {
+    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDateTime dataVencimento, User user) {
         this.id = id;
         this.descricao = descricao;
         this.valor = valor;
         this.periodo = periodo;
         this.dataVencimento = dataVencimento;
-        this.usuario = usuario;
+        this.usuario = user;
     }
 
     public GastoDTO(Gasto entity) {
@@ -46,7 +46,7 @@ public class GastoDTO {
         this.valor = entity.getValor();
         this.periodo = entity.getPeriodo();
         this.dataVencimento = entity.getDataVencimento();
-        this.usuario = entity.getUsuario();
+        this.usuario = entity.getUser();
     }
 
     public Long getId() {
@@ -89,11 +89,11 @@ public class GastoDTO {
         this.dataVencimento = dataVencimento;
     }
 
-    public Usuario getUsuario() {
+    public User getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUsuario(User user) {
+        this.usuario = user;
     }
 }

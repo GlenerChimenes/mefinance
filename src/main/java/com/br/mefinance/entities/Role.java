@@ -1,5 +1,6 @@
 package com.br.mefinance.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -18,7 +19,8 @@ public class Role implements GrantedAuthority {
     private String authority;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<Usuario> usuarios = new HashSet<>();
+    @JsonIgnore
+    private Set<User> usuarios = new HashSet<>();
 
     public Role() {
     }
@@ -29,11 +31,11 @@ public class Role implements GrantedAuthority {
         this.authority = authority;
     }
 
-    public Set<Usuario> getUsuarios() {
+    public Set<User> getUsuarios() {
         return usuarios;
     }
 
-    public void setUsuarios(Set<Usuario> usuarios) {
+    public void setUsuarios(Set<User> usuarios) {
         this.usuarios = usuarios;
     }
 

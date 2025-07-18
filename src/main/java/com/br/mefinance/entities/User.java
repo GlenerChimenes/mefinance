@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 @Entity
-@Table(name = "tb_usuario")
-public class Usuario implements UserDetails {
+@Table(name = "tb_user")
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,15 +17,15 @@ public class Usuario implements UserDetails {
     private String nome;
     @Column(unique = true)
     private String email;
-    private String senha;
+    private String password;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Gasto> gastos = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "tb_usuario_role",
-            joinColumns = @JoinColumn(name = "usuario_id"),
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
@@ -53,12 +53,12 @@ public class Usuario implements UserDetails {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getPassword() {
+        return password;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Role> getRoles() {
@@ -93,7 +93,7 @@ public class Usuario implements UserDetails {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Usuario usuario = (Usuario) o;
+        User usuario = (User) o;
         return Objects.equals(id, usuario.id);
     }
 
@@ -105,11 +105,6 @@ public class Usuario implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
-    }
-
-    @Override
-    public String getPassword() {
-        return "";
     }
 
     @Override
