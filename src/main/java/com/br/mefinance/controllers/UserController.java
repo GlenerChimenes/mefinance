@@ -11,19 +11,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserDTO> buscarUsuarioId(@PathVariable Long id) {
         UserDTO dto = userService.buscarUsuarioId(id);
         return ResponseEntity.ok().body(dto);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "/me")
+    public ResponseEntity<UserDTO> findMe() {
+        UserDTO dto = userService.getMe();
+        return ResponseEntity.ok().body(dto);
+    }
 
 }
