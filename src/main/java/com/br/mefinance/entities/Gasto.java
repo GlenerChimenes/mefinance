@@ -7,7 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity(name = "TB_GASTO")
+@Entity
+@Table(name = "TB_GASTO")
 public class Gasto {
 
     @Id

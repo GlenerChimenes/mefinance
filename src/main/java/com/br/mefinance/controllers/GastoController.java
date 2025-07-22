@@ -1,8 +1,11 @@
 package com.br.mefinance.controllers;
 
 import com.br.mefinance.dto.GastoDTO;
+import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.services.GastoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +30,22 @@ public class GastoController {
         return ResponseEntity.ok().body(listDto);
     }
 
-    // Buscar gastos ordenado
+    // Buscar gastos filtrado
+    @GetMapping(value = "/filtrados")
+    public ResponseEntity<Page<GastoProjection>> buscarGastosFiltrados(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
+                                                                       @RequestParam(value = "descricao", defaultValue = "0") String descricao,
+                                                                      Pageable pageable){
+        Page<GastoProjection> page = gastorService.buscarGastosFiltrados(usuarioId, descricao, pageable);
+        return ResponseEntity.ok().body(page);
+    }
 
     // Buscar todos os gastos
+    @GetMapping(value = "/todos")
+    public ResponseEntity<Page<GastoProjection>> buscarTodosGastos(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
+                                                                   Pageable pageable){
+        Page<GastoProjection> page = gastorService.buscarTodosGastos(usuarioId, pageable);
+        return ResponseEntity.ok().body(page);
+    }
 
     // Inserir gasto
 

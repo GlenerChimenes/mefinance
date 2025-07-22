@@ -2,8 +2,11 @@ package com.br.mefinance.services;
 
 import com.br.mefinance.dto.GastoDTO;
 import com.br.mefinance.entities.Gasto;
+import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.repositorys.GastoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,16 @@ public class GastoService {
         entity.setDataVencimento(dto.getDataVencimento());
         entity.setValor(dto.getValor());
         entity.setPeriodo(dto.getPeriodo());
-        entity.setUser(dto.getUsuario());
+        entity.setUser(dto.getUser());
+    }
+
+    public Page<GastoProjection> buscarTodosGastos(Long usuarioId, Pageable pageable) {
+        Page<GastoProjection> page = repository.findByUserId(usuarioId, pageable);
+        return page;
+    }
+
+    public Page<GastoProjection> buscarGastosFiltrados(Long usuarioId, String descricao, Pageable pageable) {
+        Page<GastoProjection> page = repository.buscarGastosFiltrados(usuarioId, descricao, pageable);
+        return page;
     }
 }

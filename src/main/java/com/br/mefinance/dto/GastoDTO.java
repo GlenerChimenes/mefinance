@@ -19,14 +19,16 @@ public class GastoDTO {
     @Positive(message = "Valor deve ser positivo")
     private BigDecimal valor;
 
-    @NotBlank(message = "Campo periodo requerido")
+    @NotNull(message = "Campo periodo requerido")
     private Integer periodo;
 
     @NotNull(message = "Data de vencimento é obrigatoria")
     private LocalDateTime dataVencimento;
 
     @NotNull(message = "User é obrigatória")
-    private User usuario;
+    private User user;
+
+    private Long idUser;
 
     public GastoDTO() {
     }
@@ -37,7 +39,7 @@ public class GastoDTO {
         this.valor = valor;
         this.periodo = periodo;
         this.dataVencimento = dataVencimento;
-        this.usuario = user;
+        this.user = user;
     }
 
     public GastoDTO(Gasto entity) {
@@ -46,7 +48,7 @@ public class GastoDTO {
         this.valor = entity.getValor();
         this.periodo = entity.getPeriodo();
         this.dataVencimento = entity.getDataVencimento();
-        this.usuario = entity.getUser();
+        this.setIdUser(entity.getUser().getId());
     }
 
     public Long getId() {
@@ -89,11 +91,19 @@ public class GastoDTO {
         this.dataVencimento = dataVencimento;
     }
 
-    public User getUsuario() {
-        return usuario;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsuario(User user) {
-        this.usuario = user;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Long getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
     }
 }

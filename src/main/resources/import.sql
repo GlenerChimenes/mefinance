@@ -9,6 +9,11 @@ INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUE
 INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Internet', 1500.00, 072025, '2025-07-15 10:30:00', 4);
 INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Condominio', 1500.00, 072025, '2025-07-15 10:30:00', 4);
 INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Conta luz', 1500.00, 072025, '2025-07-15 10:30:00', 4);
+INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Fatura Sicoob', 1500.00, 082025, '2025-07-15 10:30:00', 4);
+INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Seguro carro', 1500.00, 082025, '2025-07-15 10:30:00', 4);
+INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Internet', 1500.00, 082025, '2025-07-15 10:30:00', 4);
+INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Condominio', 1500.00, 082025, '2025-07-15 10:30:00', 4);
+INSERT INTO TB_GASTO (descricao, valor, periodo, data_vencimento, user_id) VALUES ('Conta luz', 1500.00, 082025, '2025-07-15 10:30:00', 4);
 
 INSERT INTO tb_role (authority) VALUES ('ROLE_OPERATOR');
 INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
