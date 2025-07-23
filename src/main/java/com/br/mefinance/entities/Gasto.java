@@ -1,5 +1,6 @@
 package com.br.mefinance.entities;
 
+import com.br.mefinance.enuns.SituacaoGasto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +25,13 @@ public class Gasto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "data_vencimento")
     private LocalDateTime dataVencimento;
+
+    @Enumerated(EnumType.STRING)
+    private SituacaoGasto situacao;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name = "data_pagamento")
+    private LocalDateTime dataPagamento;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -76,5 +84,21 @@ public class Gasto {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public SituacaoGasto getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(SituacaoGasto situacao) {
+        this.situacao = situacao;
+    }
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
     }
 }

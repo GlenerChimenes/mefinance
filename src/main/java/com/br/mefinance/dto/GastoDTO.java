@@ -2,6 +2,7 @@ package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.entities.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -24,6 +25,9 @@ public class GastoDTO {
 
     @NotNull(message = "Data de vencimento é obrigatoria")
     private LocalDateTime dataVencimento;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime dataPagamento;
 
     @NotNull(message = "User é obrigatória")
     private User user;
@@ -48,6 +52,7 @@ public class GastoDTO {
         this.valor = entity.getValor();
         this.periodo = entity.getPeriodo();
         this.dataVencimento = entity.getDataVencimento();
+        this.dataPagamento = entity.getDataPagamento();
         this.setIdUser(entity.getUser().getId());
     }
 
@@ -105,5 +110,13 @@ public class GastoDTO {
 
     public void setIdUser(Long idUser) {
         this.idUser = idUser;
+    }
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
     }
 }
