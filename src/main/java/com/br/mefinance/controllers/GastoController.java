@@ -61,7 +61,14 @@ public class GastoController {
     // Deletar gasto
 
     // Replicar gasto
+    @GetMapping(value = "/replicar")
+    public ResponseEntity<Void> replicarGasto(@RequestParam(value = "userId") Long userId,
+                                              @RequestParam(value = "periodoAtual") Integer periodoAtual,
+                                              @RequestParam(value = "periodoReplicar") Integer periodoReplicar ){
+        gastoService.replicarGastos(userId, periodoAtual, periodoReplicar);
+        return ResponseEntity.noContent().build();
 
+    }
     // Pagar gasto
     @GetMapping(value = "/pagarGasto/{id}")
     public ResponseEntity<GastoDTO> pagar(@PathVariable Long id){

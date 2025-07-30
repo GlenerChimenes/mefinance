@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +25,7 @@ public class Gasto {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "data_vencimento")
-    private LocalDateTime dataVencimento;
+    private LocalDate dataVencimento;
 
     @Enumerated(EnumType.STRING)
     private SituacaoGasto situacao;
@@ -62,11 +63,11 @@ public class Gasto {
         this.valor = valor;
     }
 
-    public LocalDateTime getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDateTime dataVencimento) {
+    public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 

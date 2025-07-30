@@ -12,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,11 +47,13 @@ public class GastoService {
         entity.setUser(dto.getUser());
     }
 
+    @Transactional(readOnly = true)
     public Page<GastoProjection> buscarTodosGastos(Long usuarioId, Pageable pageable) {
         Page<GastoProjection> page = repository.findByUserId(usuarioId, pageable);
         return page;
     }
 
+    @Transactional(readOnly = true)
     public Page<GastoProjection> buscarGastosFiltrados(Long usuarioId, String descricao, Pageable pageable) {
         Page<GastoProjection> page = repository.buscarGastosFiltrados(usuarioId, descricao, pageable);
         return page;
@@ -68,4 +72,17 @@ public class GastoService {
 
         return new GastoDTO(entity);
     }
+
+    public void replicarGastos(Long userId, Integer periodoAtual, Integer periodoReplicar) {
+        LocalDate dataReplicar = tranformaPeriodoEmData(periodoReplicar);
+        repository.replicarGastos(userId, periodoAtual, periodoReplicar, dataReplicar);
+    }
+
+    private LocalDate tranformaPeriodoEmData(Integer periodoReplicar) {
+        String periodoStr = String.format("%06d", periodoReplicar);
+        int mes = Integer.parseInt(periodoStr.substring(0, 2));
+        int ano = Integer.parseInt(periodoStr.substring(2, 6));
+        return LocalDate.of(ano, mes, 10);
+    }
+
 }
