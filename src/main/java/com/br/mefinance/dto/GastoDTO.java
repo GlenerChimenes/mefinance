@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class GastoDTO {
@@ -24,7 +25,8 @@ public class GastoDTO {
     private Integer periodo;
 
     @NotNull(message = "Data de vencimento é obrigatoria")
-    private LocalDateTime dataVencimento;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dataVencimento;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataPagamento;
@@ -37,7 +39,7 @@ public class GastoDTO {
     public GastoDTO() {
     }
 
-    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDateTime dataVencimento, User user) {
+    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDate dataVencimento, User user) {
         this.id = id;
         this.descricao = descricao;
         this.valor = valor;
@@ -88,11 +90,11 @@ public class GastoDTO {
         this.periodo = periodo;
     }
 
-    public LocalDateTime getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDateTime dataVencimento) {
+    public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 

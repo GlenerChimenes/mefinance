@@ -23,7 +23,7 @@ public class Gasto {
 
     private Integer periodo;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "data_vencimento")
     private LocalDate dataVencimento;
 

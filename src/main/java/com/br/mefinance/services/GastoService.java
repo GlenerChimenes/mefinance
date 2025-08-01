@@ -5,7 +5,8 @@ import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.enuns.SituacaoGasto;
 import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.repositorys.GastoRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.br.mefinance.services.exceptions.BusinessException;
+import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +49,7 @@ public class GastoService {
 
     @Transactional(readOnly = true)
     public Page<GastoProjection> buscarTodosGastos(Long usuarioId, Pageable pageable) {
-        Page<GastoProjection> page = repository.findByUserId(usuarioId, pageable);
-        return page;
+            return repository.findByUserId(usuarioId, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +60,7 @@ public class GastoService {
 
     public GastoDTO pagarGasto(Long id) {
         Gasto entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Gasto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
 
         if(entity.getSituacao() == SituacaoGasto.PAGO){
             throw new IllegalArgumentException("Gasto já está pago");
@@ -74,6 +73,11 @@ public class GastoService {
     }
 
     public void replicarGastos(Long userId, Integer periodoAtual, Integer periodoReplicar) {
+        List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodoReplicar);
+        if(!entity.isEmpty()){
+            throw new BusinessException("Já existe gastos para o mês escolhido para replicacao");
+        }
+
         LocalDate dataReplicar = tranformaPeriodoEmData(periodoReplicar);
         repository.replicarGastos(userId, periodoAtual, periodoReplicar, dataReplicar);
     }

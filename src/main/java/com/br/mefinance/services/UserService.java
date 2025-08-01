@@ -5,6 +5,7 @@ import com.br.mefinance.entities.Role;
 import com.br.mefinance.entities.User;
 import com.br.mefinance.projections.UserDetailsProjection;
 import com.br.mefinance.repositorys.UserRepository;
+import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +44,7 @@ public class UserService implements UserDetailsService {
 
     public UserDTO buscarUsuarioId(Long id) {
         Optional<User> obj = repository.findById(id);
-        User entity = obj.orElseThrow(() -> new RuntimeException("Erro ao buscar usuraio"));
+        User entity = obj.orElseThrow(() -> new ResourceNotFoundException("Erro ao buscar usuraio"));
         return new UserDTO(entity);
     }
 
