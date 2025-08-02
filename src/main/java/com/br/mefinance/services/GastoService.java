@@ -58,12 +58,15 @@ public class GastoService {
         return page;
     }
 
-    public GastoDTO pagarGasto(Long id) {
+    public GastoDTO pagarGasto(Long id, Long userId) {
         Gasto entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
 
+        if(!entity.getUser().getId().equals(userId)){
+            throw new BusinessException("Este gasto não pertence ao usuário informado");
+        }
         if(entity.getSituacao() == SituacaoGasto.PAGO){
-            throw new IllegalArgumentException("Gasto já está pago");
+            throw new BusinessException("Esse gasto já está pago");
         }
         entity.setSituacao(SituacaoGasto.PAGO);
         entity.setDataPagamento(LocalDateTime.now());

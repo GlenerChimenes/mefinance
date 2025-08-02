@@ -2,7 +2,10 @@ package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.entities.User;
+import com.br.mefinance.enuns.SituacaoGasto;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -31,6 +34,9 @@ public class GastoDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataPagamento;
 
+    @Enumerated(EnumType.STRING)
+    private SituacaoGasto situacao;
+
     @NotNull(message = "User é obrigatória")
     private User user;
 
@@ -55,6 +61,7 @@ public class GastoDTO {
         this.periodo = entity.getPeriodo();
         this.dataVencimento = entity.getDataVencimento();
         this.dataPagamento = entity.getDataPagamento();
+        this.situacao = entity.getSituacao();
         this.setIdUser(entity.getUser().getId());
     }
 
@@ -120,5 +127,13 @@ public class GastoDTO {
 
     public void setDataPagamento(LocalDateTime dataPagamento) {
         this.dataPagamento = dataPagamento;
+    }
+
+    public SituacaoGasto getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(SituacaoGasto situacao) {
+        this.situacao = situacao;
     }
 }

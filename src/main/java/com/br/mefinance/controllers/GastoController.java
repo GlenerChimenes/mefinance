@@ -71,8 +71,8 @@ public class GastoController {
     }
     // Pagar gasto
     @GetMapping(value = "/pagarGasto/{id}")
-    public ResponseEntity<GastoDTO> pagar(@PathVariable Long id){
-        GastoDTO dto = gastoService.pagarGasto(id);
+    public ResponseEntity<GastoDTO> pagar(@PathVariable Long id, @RequestParam(value = "userId") Long userId){
+        GastoDTO dto = gastoService.pagarGasto(id, userId);
         return ResponseEntity.ok(dto);
     }
 
