@@ -57,7 +57,6 @@ public class GastoController {
         return ResponseEntity.created(uri).body(dto);
     }
 
-    // Alterar gasto
     @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<GastoDTO> alterarGasto(@PathVariable Long id, @Validated @RequestBody GastoDTO dto) {
@@ -68,6 +67,13 @@ public class GastoController {
 
 
     // Deletar gasto
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        gastoService.deleteGasto(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/replicar")
     public ResponseEntity<Void> replicarGasto(@RequestParam(value = "userId") Long userId,

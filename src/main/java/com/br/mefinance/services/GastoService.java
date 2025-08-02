@@ -6,9 +6,11 @@ import com.br.mefinance.enuns.SituacaoGasto;
 import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.repositorys.GastoRepository;
 import com.br.mefinance.services.exceptions.BusinessException;
+import com.br.mefinance.services.exceptions.DatabaseException;
 import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -121,5 +123,17 @@ public class GastoService {
         }
         entity.setSituacao(dto.getSituacao());
         entity.setUser(dto.getUser());
+    }
+
+    @Transactional
+    public void deleteGasto(Long id) {
+        if(!repository.existsById(id)){
+          throw new ResourceNotFoundException("Recurso não encontrado");
+        }
+        try{
+            repository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Falha de integridade referencial");
+        }
     }
 }

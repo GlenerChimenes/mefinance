@@ -2,6 +2,7 @@ package com.br.mefinance.controllers.handlers;
 
 import com.br.mefinance.dto.CustomError;
 import com.br.mefinance.services.exceptions.BusinessException;
+import com.br.mefinance.services.exceptions.DatabaseException;
 import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<CustomError> handleBusinessRule(BusinessException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY; // 422 - Requisição válida, mas não pode ser processada
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<CustomError> database(DatabaseException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
