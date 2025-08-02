@@ -112,6 +112,13 @@ public class GastoService {
         entity.setDataVencimento(dto.getDataVencimento());
         entity.setValor(dto.getValor());
         entity.setPeriodo(dto.getPeriodo());
+        if(dto.getSituacao().equals(entity.getSituacao())){
+            entity.setDataPagamento(dto.getDataPagamento());
+        }else if (dto.getSituacao().equals(SituacaoGasto.PAGO)) {
+            entity.setDataPagamento(LocalDateTime.now());
+        } else {
+            entity.setDataPagamento(null);
+        }
         entity.setSituacao(dto.getSituacao());
         entity.setUser(dto.getUser());
     }

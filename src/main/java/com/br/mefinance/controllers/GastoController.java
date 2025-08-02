@@ -25,14 +25,14 @@ public class GastoController {
     @Autowired
     private GastoService gastoService;
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping
     public ResponseEntity<List<GastoDTO>> buscarGastosUsuario(@RequestParam Long usuarioId, @RequestParam Integer periodo) {
         List<GastoDTO> listDto = gastoService.buscarGastosUsuario(usuarioId, periodo);
         return ResponseEntity.ok().body(listDto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/filtrados")
     public ResponseEntity<Page<GastoProjection>> buscarGastosFiltrados(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
                                                                        @RequestParam(value = "descricao", defaultValue = "0") String descricao,
@@ -41,7 +41,7 @@ public class GastoController {
         return ResponseEntity.ok().body(page);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/todos")
     public ResponseEntity<Page<GastoProjection>> buscarTodosGastos(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
                                                                    Pageable pageable){
@@ -49,7 +49,7 @@ public class GastoController {
         return ResponseEntity.ok().body(page);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @PostMapping
     public ResponseEntity<GastoDTO> inserirGasto(@Validated @RequestBody GastoDTO dto) {
           dto =  gastoService.inserir(dto);
@@ -58,7 +58,7 @@ public class GastoController {
     }
 
     // Alterar gasto
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<GastoDTO> alterarGasto(@PathVariable Long id, @Validated @RequestBody GastoDTO dto) {
         GastoDTO newDto = gastoService.update(id, dto);
@@ -68,7 +68,7 @@ public class GastoController {
 
 
     // Deletar gasto
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/replicar")
     public ResponseEntity<Void> replicarGasto(@RequestParam(value = "userId") Long userId,
                                               @RequestParam(value = "periodoAtual") Integer periodoAtual,
@@ -77,7 +77,7 @@ public class GastoController {
         return ResponseEntity.noContent().build();
 
     }
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/pagarGasto/{id}")
     public ResponseEntity<GastoDTO> pagar(@PathVariable Long id, @RequestParam(value = "userId") Long userId){
         GastoDTO dto = gastoService.pagarGasto(id, userId);
