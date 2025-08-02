@@ -7,6 +7,7 @@ import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.repositorys.GastoRepository;
 import com.br.mefinance.services.exceptions.BusinessException;
 import com.br.mefinance.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class GastoService {
     @Autowired
     private GastoRepository repository;
 
+    @Transactional(readOnly = true)
     public List<GastoDTO> buscarGastosUsuario(Long userId, Integer periodo) {
         List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodo);
        return entity.stream()
@@ -33,12 +35,12 @@ public class GastoService {
     @Transactional
     public GastoDTO inserir(GastoDTO dto) {
         Gasto entity = new Gasto();
-        copiaDtpParaEntidade(dto, entity);
+        copiaDtoParaEntidade(dto, entity);
         entity = repository.save(entity);
         return new GastoDTO(entity);
     }
 
-    private void copiaDtpParaEntidade(GastoDTO dto, Gasto entity) {
+    private void copiaDtoParaEntidade(GastoDTO dto, Gasto entity) {
         entity.setDescricao(dto.getDescricao());
         entity.setDataVencimento(dto.getDataVencimento());
         entity.setValor(dto.getValor());
@@ -75,6 +77,7 @@ public class GastoService {
         return new GastoDTO(entity);
     }
 
+    @Transactional
     public void replicarGastos(Long userId, Integer periodoAtual, Integer periodoReplicar) {
         List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodoReplicar);
         if(!entity.isEmpty()){
@@ -92,4 +95,24 @@ public class GastoService {
         return LocalDate.of(ano, mes, 10);
     }
 
+    @Transactional
+    public GastoDTO update(Long id, GastoDTO dto) {
+        try {
+            Gasto entity = repository.getReferenceById(id);
+            copiaDtoParaEntidadeUpdate(dto, entity);
+            entity = repository.save(entity);
+            return new GastoDTO(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Id não encotrado " + id);
+        }
+    }
+
+    private void copiaDtoParaEntidadeUpdate(GastoDTO dto, Gasto entity) {
+        entity.setDescricao(dto.getDescricao());
+        entity.setDataVencimento(dto.getDataVencimento());
+        entity.setValor(dto.getValor());
+        entity.setPeriodo(dto.getPeriodo());
+        entity.setSituacao(dto.getSituacao());
+        entity.setUser(dto.getUser());
+    }
 }
