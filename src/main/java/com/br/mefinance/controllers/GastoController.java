@@ -1,6 +1,7 @@
 package com.br.mefinance.controllers;
 
 import com.br.mefinance.dto.GastoDTO;
+import com.br.mefinance.dto.ResumoGastosDTO;
 import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.services.GastoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,23 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.math.BigDecimal;
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/gastos")
 public class GastoController {
 
-    BigDecimal rendaBruta = new BigDecimal("12500.00");
-
     @Autowired
     private GastoService gastoService;
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_CLIENT')")
     @GetMapping
-    public ResponseEntity<List<GastoDTO>> buscarGastosUsuario(@RequestParam Long usuarioId, @RequestParam Integer periodo) {
-        List<GastoDTO> listDto = gastoService.buscarGastosUsuario(usuarioId, periodo);
-        return ResponseEntity.ok().body(listDto);
+    public ResponseEntity<ResumoGastosDTO> buscarGastosUsuario(@RequestParam Long usuarioId, @RequestParam Integer periodo) {
+        ResumoGastosDTO dto = gastoService.buscarGastosUsuario(usuarioId, periodo);
+        return ResponseEntity.ok().body(dto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_CLIENT')")
     @GetMapping(value = "/filtrados")
     public ResponseEntity<Page<GastoProjection>> buscarGastosFiltrados(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
                                                                        @RequestParam(value = "descricao", defaultValue = "0") String descricao,
@@ -41,7 +38,7 @@ public class GastoController {
         return ResponseEntity.ok().body(page);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_CLIENT')")
     @GetMapping(value = "/todos")
     public ResponseEntity<Page<GastoProjection>> buscarTodosGastos(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
                                                                    Pageable pageable){

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -18,6 +19,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
+    private BigDecimal rendaMensal;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
@@ -110,5 +112,13 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public BigDecimal getRendaMensal() {
+        return rendaMensal;
+    }
+
+    public void setRendaMensal(BigDecimal rendaMensal) {
+        this.rendaMensal = rendaMensal;
     }
 }

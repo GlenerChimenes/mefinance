@@ -1,12 +1,15 @@
 package com.br.mefinance.services;
 
 import com.br.mefinance.dto.GastoDTO;
+import com.br.mefinance.dto.ResumoGastosDTO;
 import com.br.mefinance.entities.Gasto;
 import com.br.mefinance.enuns.SituacaoGasto;
 import com.br.mefinance.projections.GastoProjection;
 import com.br.mefinance.repositorys.GastoRepository;
+import com.br.mefinance.repositorys.UserRepository;
 import com.br.mefinance.services.exceptions.BusinessException;
 import com.br.mefinance.services.exceptions.DatabaseException;
+import com.br.mefinance.services.exceptions.RequisicaoInvalidaException;
 import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,14 +28,39 @@ import java.util.stream.Collectors;
 @Service
 public class GastoService {
 
+    BigDecimal rendaBruta = new BigDecimal("12500.00");
+
     @Autowired
     private GastoRepository repository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional(readOnly = true)
-    public List<GastoDTO> buscarGastosUsuario(Long userId, Integer periodo) {
+    public ResumoGastosDTO buscarGastosUsuario(Long userId, Integer periodo) {
+        if(userId == null ){
+            throw new RequisicaoInvalidaException("Usuário não pode ser null");
+        }
+        if(periodo == 0){
+            throw new RequisicaoInvalidaException("Período inválido");
+        }
+       //TODO Implementar e testar
         List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodo);
-       return entity.stream()
-                .map(o -> new GastoDTO(o)).collect(Collectors.toList());
+        List<GastoDTO> gastosDTO = entity.stream()
+                                             .map(GastoDTO::new)
+                                             .collect(Collectors.toList());
+
+        BigDecimal totalGastos = entity.stream()
+                                           .map(Gasto::getValor)
+                                           .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal rendaMensal = userRepository.findById(userId)
+                                                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"))
+                                                 .getRendaMensal();
+
+        BigDecimal sobraNoMes = rendaMensal.subtract(totalGastos);
+
+        return new ResumoGastosDTO(gastosDTO, totalGastos, sobraNoMes);
     }
 
     @Transactional
