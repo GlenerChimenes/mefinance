@@ -1,5 +1,6 @@
 package com.br.mefinance.config.customgrant;
 
+import com.br.mefinance.entities.User;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -77,9 +78,15 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 				.collect(Collectors.toSet());
 		
 		//-----------Create a new Security Context Holder Context----------
-		OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
-		oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
+        OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken =
+                (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
+        User usuario = (User) user;
+
+        CustomUserAuthorities customPasswordUser =
+                new CustomUserAuthorities(usuario.getId(), username, user.getAuthorities());
+
+        oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 		
 		var newcontext = SecurityContextHolder.createEmptyContext();
 		newcontext.setAuthentication(oAuth2ClientAuthenticationToken);

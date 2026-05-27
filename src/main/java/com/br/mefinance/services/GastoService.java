@@ -44,7 +44,6 @@ public class GastoService {
         if(periodo == 0){
             throw new RequisicaoInvalidaException("Período inválido");
         }
-       //TODO Implementar e testar
         List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodo);
         List<GastoDTO> gastosDTO = entity.stream()
                                              .map(GastoDTO::new)
@@ -60,7 +59,7 @@ public class GastoService {
 
         BigDecimal sobraNoMes = rendaMensal.subtract(totalGastos);
 
-        return new ResumoGastosDTO(gastosDTO, totalGastos, sobraNoMes);
+        return new ResumoGastosDTO(gastosDTO, totalGastos, sobraNoMes, rendaMensal);
     }
 
     @Transactional
