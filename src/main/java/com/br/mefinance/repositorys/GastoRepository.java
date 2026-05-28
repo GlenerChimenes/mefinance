@@ -18,14 +18,14 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
 
     List<Gasto> findByUserIdAndPeriodo(@Param("user_id") Long userId, @Param("periodo") Integer periodo);
 
-    @Query("SELECT g.id AS id, g.descricao AS descricao, g.valor AS valor, g.periodo AS periodo, g.dataVencimento AS dataVencimento " +
+    @Query("SELECT g.id AS id, g.descricao AS descricao, g.valor AS valor, g.periodo AS periodo, g.dataVencimento AS dataVencimento, g.situacao AS situacao " +
             " FROM Gasto g " +
             " WHERE g.user.id =:user_id " +
             " ORDER BY g.periodo DESC"
     )
     Page<GastoProjection> findByUserId(@Param("user_id") Long userId, Pageable pageable);
 
-    @Query("SELECT g.id AS id, g.descricao AS descricao, g.valor AS valor, g.periodo AS periodo, g.dataVencimento AS dataVencimento " +
+    @Query("SELECT g.id AS id, g.descricao AS descricao, g.valor AS valor, g.periodo AS periodo, g.dataVencimento AS dataVencimento, g.situacao AS situacao " +
             "FROM Gasto g " +
             "WHERE g.user.id = :user_id AND LOWER(g.descricao) LIKE LOWER(CONCAT('%', :descricao, '%')) " +
             "ORDER BY g.periodo DESC")

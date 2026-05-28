@@ -9,4 +9,5 @@ public interface GastoProjection {
     BigDecimal getValor();
     Integer getPeriodo();
     LocalDate getDataVencimento();
+    String getSituacao();
 }

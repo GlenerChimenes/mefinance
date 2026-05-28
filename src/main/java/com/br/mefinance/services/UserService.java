@@ -32,8 +32,11 @@ public class UserService implements UserDetailsService {
         if (result.isEmpty()) {
             throw new UsernameNotFoundException("User não encontrado");
         }
+        System.out.println("USER ID PROJECTION = " + result.getFirst().getUserId());
+        System.out.println("USERNAME PROJECTION = " + result.getFirst().getUsername());
 
         User user = new User();
+        user.setId(result.getFirst().getUserId());
         user.setEmail(email);
         user.setPassword(result.getFirst().getPassword());
         for (UserDetailsProjection projection : result) {

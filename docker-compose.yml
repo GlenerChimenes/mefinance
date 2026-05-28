@@ -12,20 +12,20 @@ services:
     networks:
       - mefinance-net
 
-  app:
-    image: mefinance:latest
-    container_name: mefinance_app
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mefinance
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 123456
-      CORS_ORIGINS: http://localhost:4200
-    ports:
-      - "8080:8080"
-    networks:
-      - mefinance-net
+#  app:
+#    image: mefinance:latest
+#    container_name: mefinance_app
+#    depends_on:
+#      - db
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mefinance
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: 123456
+#      CORS_ORIGINS: http://localhost:4200
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - mefinance-net
 
   pgadmin:
     image: dpage/pgadmin4
