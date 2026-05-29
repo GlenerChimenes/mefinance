@@ -10,4 +10,6 @@ public interface GastoProjection {
     Integer getPeriodo();
     LocalDate getDataVencimento();
     String getSituacao();
+    Long getIdCategoria();
+    String getNomeCategoria();
 }

@@ -39,6 +39,10 @@ public class Gasto {
     @JsonIgnore
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
     public Long getId() {
         return id;
     }
@@ -101,5 +105,13 @@ public class Gasto {
 
     public void setDataPagamento(LocalDateTime dataPagamento) {
         this.dataPagamento = dataPagamento;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }

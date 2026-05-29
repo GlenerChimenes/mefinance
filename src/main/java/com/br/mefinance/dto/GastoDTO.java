@@ -1,7 +1,6 @@
 package com.br.mefinance.dto;
 
 import com.br.mefinance.entities.Gasto;
-import com.br.mefinance.entities.User;
 import com.br.mefinance.enuns.SituacaoGasto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
@@ -37,21 +36,26 @@ public class GastoDTO {
     @Enumerated(EnumType.STRING)
     private SituacaoGasto situacao;
 
-    @NotNull(message = "User é obrigatória")
-    private User user;
+    private Long idCategoria;
 
+    private String nomeCategoria;
+
+//    @NotNull(message = "User é obrigatória")
+//    private User user;
+
+    @NotNull(message = "Usuário é obrigatório")
     private Long idUser;
 
     public GastoDTO() {
     }
 
-    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDate dataVencimento, User user) {
+    public GastoDTO(Long id, String descricao, BigDecimal valor, Integer periodo, LocalDate dataVencimento) {
         this.id = id;
         this.descricao = descricao;
         this.valor = valor;
         this.periodo = periodo;
         this.dataVencimento = dataVencimento;
-        this.user = user;
+//        this.user = user;
     }
 
     public GastoDTO(Gasto entity) {
@@ -62,7 +66,15 @@ public class GastoDTO {
         this.dataVencimento = entity.getDataVencimento();
         this.dataPagamento = entity.getDataPagamento();
         this.situacao = entity.getSituacao();
-        this.setIdUser(entity.getUser().getId());
+
+        if (entity.getUser() != null) {
+            this.idUser = entity.getUser().getId();
+        }
+
+        if (entity.getCategoria() != null) {
+            this.idCategoria = entity.getCategoria().getId();
+            this.nomeCategoria = entity.getCategoria().getNome();
+        }
     }
 
     public Long getId() {
@@ -105,13 +117,13 @@ public class GastoDTO {
         this.dataVencimento = dataVencimento;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public Long getIdUser() {
         return idUser;
@@ -135,5 +147,21 @@ public class GastoDTO {
 
     public void setSituacao(SituacaoGasto situacao) {
         this.situacao = situacao;
+    }
+
+    public Long getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Long idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public String getNomeCategoria() {
+        return nomeCategoria;
+    }
+
+    public void setNomeCategoria(String nomeCategoria) {
+        this.nomeCategoria = nomeCategoria;
     }
 }

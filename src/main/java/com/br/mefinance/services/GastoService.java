@@ -2,9 +2,12 @@ package com.br.mefinance.services;
 
 import com.br.mefinance.dto.GastoDTO;
 import com.br.mefinance.dto.ResumoGastosDTO;
+import com.br.mefinance.entities.Categoria;
 import com.br.mefinance.entities.Gasto;
+import com.br.mefinance.entities.User;
 import com.br.mefinance.enuns.SituacaoGasto;
 import com.br.mefinance.projections.GastoProjection;
+import com.br.mefinance.repositorys.CategoriaRepository;
 import com.br.mefinance.repositorys.GastoRepository;
 import com.br.mefinance.repositorys.UserRepository;
 import com.br.mefinance.services.exceptions.BusinessException;
@@ -35,6 +38,10 @@ public class GastoService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
 
     @Transactional(readOnly = true)
     public ResumoGastosDTO buscarGastosUsuario(Long userId, Integer periodo) {
@@ -76,7 +83,15 @@ public class GastoService {
         entity.setValor(dto.getValor());
         entity.setPeriodo(dto.getPeriodo());
         entity.setSituacao(SituacaoGasto.PENDENTE);
-        entity.setUser(dto.getUser());
+        entity.setDataPagamento(null);
+
+        User user = userRepository.getReferenceById(dto.getIdUser());
+        entity.setUser(user);
+
+        if (dto.getIdCategoria() != null) {
+            Categoria categoria = categoriaRepository.getReferenceById(dto.getIdCategoria());
+            entity.setCategoria(categoria);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -142,15 +157,26 @@ public class GastoService {
         entity.setDataVencimento(dto.getDataVencimento());
         entity.setValor(dto.getValor());
         entity.setPeriodo(dto.getPeriodo());
-        if(dto.getSituacao().equals(entity.getSituacao())){
+
+        if (dto.getSituacao().equals(entity.getSituacao())) {
             entity.setDataPagamento(dto.getDataPagamento());
-        }else if (dto.getSituacao().equals(SituacaoGasto.PAGO)) {
+        } else if (dto.getSituacao().equals(SituacaoGasto.PAGO)) {
             entity.setDataPagamento(LocalDateTime.now());
         } else {
             entity.setDataPagamento(null);
         }
+
         entity.setSituacao(dto.getSituacao());
-        entity.setUser(dto.getUser());
+
+        User user = userRepository.getReferenceById(dto.getIdUser());
+        entity.setUser(user);
+
+        if (dto.getIdCategoria() != null) {
+            Categoria categoria = categoriaRepository.getReferenceById(dto.getIdCategoria());
+            entity.setCategoria(categoria);
+        } else {
+            entity.setCategoria(null);
+        }
     }
 
     @Transactional
