@@ -1,5 +1,6 @@
 package com.br.mefinance.config;
 
+
 import com.br.mefinance.config.customgrant.CustomPasswordAuthenticationConverter;
 import com.br.mefinance.config.customgrant.CustomPasswordAuthenticationProvider;
 import com.br.mefinance.config.customgrant.CustomUserAuthorities;
@@ -15,7 +16,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2Token;
@@ -64,6 +64,9 @@ public class AuthorizationServerConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Bean
     @Order(2)
     public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -85,7 +88,7 @@ public class AuthorizationServerConfig {
                                 authorizationService(),
                                 tokenGenerator(),
                                 userDetailsService,
-                                passwordEncoder()
+                                passwordEncoder
                         ))
                 );
 
@@ -106,17 +109,12 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public RegisteredClientRepository registeredClientRepository() {
         // @formatter:off
 		RegisteredClient registeredClient = RegisteredClient
 			.withId(UUID.randomUUID().toString())
 			.clientId(clientId)
-			.clientSecret(passwordEncoder().encode(clientSecret))
+			.clientSecret(passwordEncoder.encode(clientSecret))
 			.scope("read")
 			.scope("write")
 			.authorizationGrantType(new AuthorizationGrantType("password"))

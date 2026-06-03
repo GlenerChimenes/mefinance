@@ -1,10 +1,12 @@
 package com.br.mefinance.services;
 
 import com.br.mefinance.dto.UserDTO;
+import com.br.mefinance.dto.UserInsertDTO;
 import com.br.mefinance.entities.Role;
 import com.br.mefinance.entities.User;
 import com.br.mefinance.projections.UserDetailsProjection;
 import com.br.mefinance.repositorys.UserRepository;
+import com.br.mefinance.services.exceptions.BusinessException;
 import com.br.mefinance.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -32,8 +38,6 @@ public class UserService implements UserDetailsService {
         if (result.isEmpty()) {
             throw new UsernameNotFoundException("User não encontrado");
         }
-        System.out.println("USER ID PROJECTION = " + result.getFirst().getUserId());
-        System.out.println("USERNAME PROJECTION = " + result.getFirst().getUsername());
 
         User user = new User();
         user.setId(result.getFirst().getUserId());
@@ -68,5 +72,28 @@ public class UserService implements UserDetailsService {
     public UserDTO getMe() {
         User user = authenticated();
         return new UserDTO(user);
+    }
+
+    @Transactional
+    public UserDTO cadastrarUsuario(UserInsertDTO dto) {
+        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new BusinessException("E-mail já cadastrado");
+        }
+
+        User entity = new User();
+        entity.setNome(dto.getNome());
+        entity.setEmail(dto.getEmail());
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        entity.setRendaMensal(dto.getRendaMensal());
+
+        Role roleClient = new Role();
+        roleClient.setId(3L);
+        roleClient.setAuthority("ROLE_CLIENT");
+
+        entity.addRole(roleClient);
+
+        entity = repository.save(entity);
+
+        return new UserDTO(entity);
     }
 }

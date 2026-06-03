@@ -16,7 +16,17 @@ import java.util.List;
 public interface GastoRepository extends JpaRepository<Gasto, Long> {
 
 
-    List<Gasto> findByUserIdAndPeriodo(@Param("user_id") Long userId, @Param("periodo") Integer periodo);
+    @Query("""
+    SELECT g
+    FROM Gasto g
+    WHERE g.user.id = :userId
+      AND g.periodo = :periodo
+    ORDER BY g.dataVencimento ASC
+""")
+    List<Gasto> findByUserIdAndPeriodo(
+            @Param("userId") Long userId,
+            @Param("periodo") Integer periodo
+    );
 
     @Query("""
                 SELECT 
@@ -32,9 +42,10 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
                 FROM Gasto g
                 LEFT JOIN g.categoria c
                 WHERE g.user.id = :user_id
+                AND   g.periodo = :periodo            
                 ORDER BY g.periodo DESC
             """)
-    Page<GastoProjection> findByUserId(@Param("user_id") Long userId, Pageable pageable);
+    Page<GastoProjection> findByUserId(@Param("user_id") Long userId, @Param("periodo") Integer periodo, Pageable pageable);
 
     @Query("""
     SELECT 

@@ -52,6 +52,9 @@ public class GastoService {
             throw new RequisicaoInvalidaException("Período inválido");
         }
         List<Gasto> entity = repository.findByUserIdAndPeriodo(userId, periodo);
+        System.out.println("DASHBOARD USER ID = " + userId);
+        System.out.println("DASHBOARD PERIODO = " + periodo);
+        System.out.println("DASHBOARD QTD = " + entity.size());
         List<GastoDTO> gastosDTO = entity.stream()
                                              .map(GastoDTO::new)
                                              .collect(Collectors.toList());
@@ -95,8 +98,8 @@ public class GastoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GastoProjection> buscarTodosGastos(Long usuarioId, Pageable pageable) {
-            return repository.findByUserId(usuarioId, pageable);
+    public Page<GastoProjection> buscarTodosGastos(Long usuarioId, Integer periodo, Pageable pageable) {
+            return repository.findByUserId(usuarioId, periodo, pageable);
     }
 
     @Transactional(readOnly = true)

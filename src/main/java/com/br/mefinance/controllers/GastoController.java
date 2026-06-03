@@ -41,8 +41,9 @@ public class GastoController {
     @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_CLIENT')")
     @GetMapping(value = "/todos")
     public ResponseEntity<Page<GastoProjection>> buscarTodosGastos(@RequestParam(value = "usuarioId", defaultValue = "0") Long usuarioId,
+                                                                   @RequestParam(value = "periodo", required = false) Integer periodo,
                                                                    Pageable pageable){
-        Page<GastoProjection> page = gastoService.buscarTodosGastos(usuarioId, pageable);
+        Page<GastoProjection> page = gastoService.buscarTodosGastos(usuarioId, periodo, pageable);
         return ResponseEntity.ok().body(page);
     }
 
