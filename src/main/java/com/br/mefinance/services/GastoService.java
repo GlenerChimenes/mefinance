@@ -132,14 +132,24 @@ public class GastoService {
             throw new BusinessException("Já existe gastos para o mês escolhido para replicacao");
         }
 
-        LocalDate dataReplicar = tranformaPeriodoEmData(periodoReplicar);
+        LocalDate dataReplicar = transformaPeriodoEmData(periodoReplicar);
         repository.replicarGastos(userId, periodoAtual, periodoReplicar, dataReplicar);
     }
 
-    private LocalDate tranformaPeriodoEmData(Integer periodoReplicar) {
-        String periodoStr = String.format("%06d", periodoReplicar);
-        int mes = Integer.parseInt(periodoStr.substring(0, 2));
-        int ano = Integer.parseInt(periodoStr.substring(2, 6));
+    private LocalDate transformaPeriodoEmData(Integer periodoReplicar) {
+        if (periodoReplicar == null) {
+            throw new RequisicaoInvalidaException("Período para replicar não pode ser nulo");
+        }
+
+        String periodoStr = String.valueOf(periodoReplicar);
+
+        if (periodoStr.length() != 6) {
+            throw new RequisicaoInvalidaException("Período inválido. Use o formato YYYYMM");
+        }
+
+        int ano = Integer.parseInt(periodoStr.substring(0, 4));
+        int mes = Integer.parseInt(periodoStr.substring(4, 6));
+
         return LocalDate.of(ano, mes, 10);
     }
 

@@ -69,23 +69,25 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
     @Modifying
     @Query(value =
             "insert into TB_GASTO                   " +
-                    "(descricao,                        " +
-                    " valor,            " +
-                    " periodo,                  " +
-                    " data_vencimento,                        " +
+                    "(descricao,                    " +
+                    " valor,                        " +
+                    " periodo,                      " +
+                    " data_vencimento,              " +
                     " situacao,                     " +
-                    " data_pagamento,                      " +
-                    " user_id)                      " +
-                    "SELECT g.descricao,         " +
-					"       g.valor,    " +
-                    "       :periodoReplicar,    " +
-                    "       :dataVencimento,         " +
-                    "       'PENDENTE',           " +
-                    "       NULL,               " +
-                    "       :user_id               " +
+                    " data_pagamento,               " +
+                    " user_id,                      " +
+                    " categoria_id)                 " +
+                    "SELECT g.descricao,            " +
+                    "       g.valor,                " +
+                    "       :periodoReplicar,       " +
+                    "       :dataVencimento,        " +
+                    "       'PENDENTE',             " +
+                    "       NULL,                   " +
+                    "       :user_id,               " +
+                    "       g.categoria_id          " +
                     "FROM TB_GASTO g                " +
-                    " where g.user_id = :user_id           " +
-                    " and   g.periodo = :periodoAtual      " ,
+                    "WHERE g.user_id = :user_id     " +
+                    "AND   g.periodo = :periodoAtual",
             nativeQuery = true)
     @Transactional
     void replicarGastos(@Param("user_id") Long userId,

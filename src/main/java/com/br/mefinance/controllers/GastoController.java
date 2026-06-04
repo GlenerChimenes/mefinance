@@ -81,6 +81,7 @@ public class GastoController {
         return ResponseEntity.noContent().build();
 
     }
+
     @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
     @GetMapping(value = "/pagarGasto/{id}")
     public ResponseEntity<GastoDTO> pagar(@PathVariable Long id, @RequestParam(value = "userId") Long userId){
