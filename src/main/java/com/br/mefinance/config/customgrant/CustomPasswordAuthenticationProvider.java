@@ -1,6 +1,7 @@
 package com.br.mefinance.config.customgrant;
 
 import com.br.mefinance.entities.User;
+import com.br.mefinance.services.UserAccessLogService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -37,11 +38,13 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 	private String username = "";
 	private String password = "";
 	private Set<String> authorizedScopes = new HashSet<>();
+    private final UserAccessLogService userAccessLogService;
 
 
 	public CustomPasswordAuthenticationProvider(OAuth2AuthorizationService authorizationService,
                                                 OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
-                                                UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+                                                UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, UserAccessLogService userAccessLogService) {
+        this.userAccessLogService = userAccessLogService;
 
         Assert.notNull(authorizationService, "authorizationService cannot be null");
 		Assert.notNull(tokenGenerator, "TokenGenerator cannot be null");
@@ -72,7 +75,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 		if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(username)) {
 			throw new OAuth2AuthenticationException("Invalid credentials");
 		}
-		
+        userAccessLogService.registrarAcesso(username);
 		authorizedScopes = user.getAuthorities().stream()
 				.map(scope -> scope.getAuthority())
 				.filter(scope -> registeredClient.getScopes().contains(scope))

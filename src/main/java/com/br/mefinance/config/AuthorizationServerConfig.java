@@ -4,6 +4,7 @@ package com.br.mefinance.config;
 import com.br.mefinance.config.customgrant.CustomPasswordAuthenticationConverter;
 import com.br.mefinance.config.customgrant.CustomPasswordAuthenticationProvider;
 import com.br.mefinance.config.customgrant.CustomUserAuthorities;
+import com.br.mefinance.services.UserAccessLogService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -67,6 +68,10 @@ public class AuthorizationServerConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserAccessLogService userAccessLogService;
+
+
     @Bean
     @Order(2)
     public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -88,7 +93,8 @@ public class AuthorizationServerConfig {
                                 authorizationService(),
                                 tokenGenerator(),
                                 userDetailsService,
-                                passwordEncoder
+                                passwordEncoder,
+                                userAccessLogService
                         ))
                 );
 
