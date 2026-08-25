@@ -19,7 +19,7 @@ public class UserAccessLogController {
     @GetMapping
     public ResponseEntity<Page<UserAccessLogDTO>> listar(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "20") Integer size
+            @RequestParam(defaultValue = "50") Integer size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserAccessLogDTO> result = service.listarUltimosAcessos(pageable);
