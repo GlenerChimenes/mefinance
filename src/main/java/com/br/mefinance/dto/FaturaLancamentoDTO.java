@@ -7,5 +7,7 @@ public record FaturaLancamentoDTO(
         LocalDate data,
         String descricao,
         String categoria,
+        String titular,
+        String parcela,
         BigDecimal valor) {
 }

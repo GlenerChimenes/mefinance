@@ -9,6 +9,7 @@ public record FaturaAnaliseDTO(
         int quantidadeLancamentos,
         String termoPesquisa,
         BigDecimal totalPesquisa,
+        List<FaturaTitularResumoDTO> titulares,
         List<FaturaMesResumoDTO> meses,
         List<FaturaLancamentoDTO> lancamentos) {
 }

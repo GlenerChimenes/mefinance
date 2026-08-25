@@ -4,6 +4,7 @@ import com.br.mefinance.dto.FaturaAnaliseDTO;
 import com.br.mefinance.dto.FaturaCategoriaResumoDTO;
 import com.br.mefinance.dto.FaturaLancamentoDTO;
 import com.br.mefinance.dto.FaturaMesResumoDTO;
+import com.br.mefinance.dto.FaturaTitularResumoDTO;
 import com.br.mefinance.services.exceptions.RequisicaoInvalidaException;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -54,7 +55,8 @@ public class FaturaAnaliseService {
                     "(?<valor>-?\\s*(?:R\\$\\s*)?(?:\\d{1,3}(?:\\.\\d{3})+|\\d+),\\d{2}|" +
                     "-?\\s*(?:R\\$\\s*)?\\d+\\.\\d{2})\\s*$",
             Pattern.CASE_INSENSITIVE);
-    private static final Pattern PARCELA_ISOLADA = Pattern.compile("^\\d{2}/\\d{2}$");
+    private static final Pattern PARCELA = Pattern.compile("(?<!\\d)(?<parcela>\\d{1,2}/\\d{1,2})(?!\\d)");
+    private static final Pattern PARCELA_ISOLADA = Pattern.compile("^\\d{1,2}/\\d{1,2}$");
     private static final Pattern ESPACOS = Pattern.compile("\\s+");
     private static final Set<String> EXTENSOES_ACEITAS = Set.of("pdf", "csv", "txt");
     private static final List<String> LINHAS_IGNORADAS = List.of(
@@ -100,6 +102,7 @@ public class FaturaAnaliseService {
                 lancamentos.size(),
                 termo == null ? "" : termo.trim(),
                 moeda(totalPesquisa),
+                agruparPorTitular(lancamentos),
                 agruparPorMes(lancamentos),
                 lancamentos);
     }
@@ -179,15 +182,24 @@ public class FaturaAnaliseService {
     private List<FaturaLancamentoDTO> extrairLancamentos(String texto, YearMonth referencia) {
         List<FaturaLancamentoDTO> itens = new ArrayList<>();
         String descricaoPendente = "";
+        String titularAtual = "Não identificado";
 
         for (String linha : texto.split("\\R")) {
             String linhaLimpa = limparLinha(linha);
+            String titularEncontrado = identificarTitular(linhaLimpa);
+            if (titularEncontrado != null) {
+                titularAtual = titularEncontrado;
+                descricaoPendente = "";
+                continue;
+            }
+
             if (linhaLimpa.isBlank() || deveIgnorar(linhaLimpa)) {
                 descricaoPendente = "";
                 continue;
             }
 
             if (PARCELA_ISOLADA.matcher(linhaLimpa).matches()) {
+                associarParcelaAoUltimoLancamento(itens, linhaLimpa, titularAtual);
                 continue;
             }
 
@@ -200,10 +212,12 @@ public class FaturaAnaliseService {
                     LocalDate data = parseData(dataPendente.group("data"), referencia);
                     String descricao = limparDescricao(
                             dataPendente.group("descricao") + " " + continuacao.group("descricao"));
+                    String parcela = extrairParcela(descricao);
+                    descricao = removerParcela(descricao);
                     BigDecimal valor = parseValor(continuacao.group("valor"));
                     descricaoPendente = "";
 
-                    adicionarLancamento(itens, data, descricao, valor);
+                    adicionarLancamento(itens, data, descricao, titularAtual, parcela, valor);
                     continue;
                 }
 
@@ -223,10 +237,14 @@ public class FaturaAnaliseService {
                     : descricaoPendente.isBlank()
                         ? descricaoLinha
                         : limparDescricao(descricaoPendente + " " + descricaoLinha);
+            String parcela = dataPendente.matches() && PARCELA_ISOLADA.matcher(matcher.group("data")).matches()
+                    ? matcher.group("data")
+                    : extrairParcela(descricao);
+            descricao = removerParcela(descricao);
             BigDecimal valor = parseValor(matcher.group("valor"));
             descricaoPendente = "";
 
-            adicionarLancamento(itens, data, descricao, valor);
+            adicionarLancamento(itens, data, descricao, titularAtual, parcela, valor);
         }
 
         return itens.stream()
@@ -239,11 +257,52 @@ public class FaturaAnaliseService {
             List<FaturaLancamentoDTO> itens,
             LocalDate data,
             String descricao,
+            String titular,
+            String parcela,
             BigDecimal valor) {
         if (data != null && !descricao.isBlank() && !deveIgnorar(descricao)
                 && valor.compareTo(BigDecimal.ZERO) != 0) {
-            itens.add(new FaturaLancamentoDTO(data, descricao, categorizar(descricao), moeda(valor)));
+            itens.add(new FaturaLancamentoDTO(
+                    data, descricao, categorizar(descricao), titular, parcela, moeda(valor)));
         }
+    }
+
+    private List<FaturaTitularResumoDTO> agruparPorTitular(List<FaturaLancamentoDTO> lancamentos) {
+        Map<String, List<FaturaLancamentoDTO>> porTitular = lancamentos.stream()
+                .collect(Collectors.groupingBy(
+                        FaturaLancamentoDTO::titular,
+                        LinkedHashMap::new,
+                        Collectors.toList()));
+
+        return porTitular.entrySet().stream()
+                .map(entry -> {
+                    List<FaturaCategoriaResumoDTO> categorias = agruparCategorias(entry.getValue());
+                    BigDecimal total = entry.getValue().stream()
+                            .map(FaturaLancamentoDTO::valor)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new FaturaTitularResumoDTO(
+                            entry.getKey(), moeda(total), entry.getValue().size(), categorias);
+                })
+                .sorted(Comparator.comparing(FaturaTitularResumoDTO::titular))
+                .toList();
+    }
+
+    private List<FaturaCategoriaResumoDTO> agruparCategorias(List<FaturaLancamentoDTO> lancamentos) {
+        Map<String, List<FaturaLancamentoDTO>> porCategoria = lancamentos.stream()
+                .collect(Collectors.groupingBy(
+                        FaturaLancamentoDTO::categoria,
+                        LinkedHashMap::new,
+                        Collectors.toList()));
+
+        return porCategoria.entrySet().stream()
+                .map(categoria -> new FaturaCategoriaResumoDTO(
+                        categoria.getKey(),
+                        moeda(categoria.getValue().stream()
+                                .map(FaturaLancamentoDTO::valor)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add)),
+                        categoria.getValue().size()))
+                .sorted(Comparator.comparing(FaturaCategoriaResumoDTO::total).reversed())
+                .toList();
     }
 
     private List<FaturaMesResumoDTO> agruparPorMes(List<FaturaLancamentoDTO> lancamentos) {
@@ -256,21 +315,7 @@ public class FaturaAnaliseService {
         return porMes.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(entry -> {
-                    Map<String, List<FaturaLancamentoDTO>> porCategoria = entry.getValue().stream()
-                            .collect(Collectors.groupingBy(
-                                    FaturaLancamentoDTO::categoria,
-                                    LinkedHashMap::new,
-                                    Collectors.toList()));
-
-                    List<FaturaCategoriaResumoDTO> categorias = porCategoria.entrySet().stream()
-                            .map(categoria -> new FaturaCategoriaResumoDTO(
-                                    categoria.getKey(),
-                                    moeda(categoria.getValue().stream()
-                                            .map(FaturaLancamentoDTO::valor)
-                                            .reduce(BigDecimal.ZERO, BigDecimal::add)),
-                                    categoria.getValue().size()))
-                            .sorted(Comparator.comparing(FaturaCategoriaResumoDTO::total).reversed())
-                            .toList();
+                    List<FaturaCategoriaResumoDTO> categorias = agruparCategorias(entry.getValue());
 
                     BigDecimal totalMes = categorias.stream()
                             .map(FaturaCategoriaResumoDTO::total)
@@ -341,6 +386,43 @@ public class FaturaAnaliseService {
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse("Outros");
+    }
+
+    private String identificarTitular(String linha) {
+        String normalizada = normalizar(linha);
+        if (normalizada.matches("^glener rocha(?:\\s+\\d{4})?$") || normalizada.startsWith("glener rocha ")) {
+            return "Glener";
+        }
+        if (normalizada.matches("^izabela r p lopes(?:\\s+\\d{4})?$") || normalizada.startsWith("izabela r p lopes ")) {
+            return "Izabela";
+        }
+        return null;
+    }
+
+    private String extrairParcela(String descricao) {
+        Matcher matcher = PARCELA.matcher(descricao);
+        return matcher.find() ? matcher.group("parcela") : null;
+    }
+
+    private String removerParcela(String descricao) {
+        return limparDescricao(PARCELA.matcher(descricao).replaceAll(" "));
+    }
+
+    private void associarParcelaAoUltimoLancamento(
+            List<FaturaLancamentoDTO> itens,
+            String parcela,
+            String titularAtual) {
+        if (itens.isEmpty()) {
+            return;
+        }
+
+        int ultimoIndice = itens.size() - 1;
+        FaturaLancamentoDTO ultimo = itens.get(ultimoIndice);
+        if (ultimo.parcela() == null && ultimo.titular().equals(titularAtual)) {
+            itens.set(ultimoIndice, new FaturaLancamentoDTO(
+                    ultimo.data(), ultimo.descricao(), ultimo.categoria(), ultimo.titular(),
+                    parcela, ultimo.valor()));
+        }
     }
 
     private static Map<String, List<String>> criarRegrasCategoria() {

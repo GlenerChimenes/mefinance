@@ -37,8 +37,11 @@ class FaturaAnaliseServiceTests {
     @Test
     void deveLerDatasSicoobIgnorarParcelaEConsiderarEstorno() {
         String texto = """
+                GLENER ROCHA 2247
                 10 MAI Valori *DB COMERCIO
                 03/03 Goiania R$ 336,32
+                TOTAL DE GLENER R$ 336,32
+                IZABELA R P LOPES 8767
                 04 JUL AGUA VIDA PURIFICADO
                 01/02 GOIANIA R$ 724,50
                 01 JUN SHOPEE *SHPSTECNOLOG SAO PAULO -R$ 101,88
@@ -58,5 +61,10 @@ class FaturaAnaliseServiceTests {
         assertThat(analise.meses()).extracting("periodo")
                 .containsExactly("2026-05", "2026-06", "2026-07");
         assertThat(analise.lancamentos().getFirst().descricao()).contains("Valori *DB COMERCIO");
+        assertThat(analise.lancamentos().getFirst().titular()).isEqualTo("Glener");
+        assertThat(analise.lancamentos().getFirst().parcela()).isEqualTo("03/03");
+        assertThat(analise.titulares()).extracting("titular")
+                .containsExactly("Glener", "Izabela");
+        assertThat(analise.titulares().getFirst().total()).isEqualByComparingTo("336.32");
     }
 }
