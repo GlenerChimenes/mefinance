@@ -66,6 +66,25 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
 """)
     Page<GastoProjection> buscarGastosFiltrados(@Param("user_id") Long userId, @Param("descricao") String descricao, Pageable pageable);
 
+    @Query("""
+            SELECT g
+            FROM Gasto g
+            LEFT JOIN FETCH g.categoria c
+            WHERE g.user.id = :userId
+              AND g.periodo BETWEEN :periodoInicial AND :periodoFinal
+              AND (
+                    :termo = ''
+                    OR LOWER(g.descricao) LIKE LOWER(CONCAT('%', :termo, '%'))
+                    OR LOWER(COALESCE(c.nome, '')) LIKE LOWER(CONCAT('%', :termo, '%'))
+              )
+            ORDER BY g.periodo ASC, g.dataVencimento ASC, g.descricao ASC
+            """)
+    List<Gasto> buscarParaAnaliseAnual(
+            @Param("userId") Long userId,
+            @Param("periodoInicial") Integer periodoInicial,
+            @Param("periodoFinal") Integer periodoFinal,
+            @Param("termo") String termo);
+
     @Modifying
     @Query(value =
             "insert into TB_GASTO                   " +

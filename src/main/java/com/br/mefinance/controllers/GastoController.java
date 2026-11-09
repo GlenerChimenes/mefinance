@@ -1,5 +1,6 @@
 package com.br.mefinance.controllers;
 
+import com.br.mefinance.dto.AnaliseAnualGastosDTO;
 import com.br.mefinance.dto.GastoDTO;
 import com.br.mefinance.dto.ResumoGastosDTO;
 import com.br.mefinance.projections.GastoProjection;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,6 +48,15 @@ public class GastoController {
                                                                    Pageable pageable){
         Page<GastoProjection> page = gastoService.buscarTodosGastos(usuarioId, periodo, pageable);
         return ResponseEntity.ok().body(page);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_CLIENT')")
+    @GetMapping("/analise-anual")
+    public ResponseEntity<AnaliseAnualGastosDTO> analisarAno(
+            @RequestParam Integer ano,
+            @RequestParam(required = false, defaultValue = "") String termo,
+            @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(gastoService.analisarAno(usuarioId(jwt), ano, termo));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_CLIENT', 'ROLE_OPERATOR')")
@@ -87,6 +99,21 @@ public class GastoController {
     public ResponseEntity<GastoDTO> pagar(@PathVariable Long id, @RequestParam(value = "userId") Long userId){
         GastoDTO dto = gastoService.pagarGasto(id, userId);
         return ResponseEntity.ok(dto);
+    }
+
+    private Long usuarioId(Jwt jwt) {
+        Object claim = jwt == null ? null : jwt.getClaim("userId");
+        if (claim instanceof Number numero) {
+            return numero.longValue();
+        }
+        if (claim instanceof String texto) {
+            try {
+                return Long.valueOf(texto);
+            } catch (NumberFormatException ignored) {
+                // Tratado abaixo.
+            }
+        }
+        throw new IllegalStateException("O token autenticado não contém um usuário válido.");
     }
 
 }

@@ -1,5 +1,7 @@
 package com.br.mefinance.services;
 
+import com.br.mefinance.dto.AnaliseAnualGastosDTO;
+import com.br.mefinance.dto.AnaliseAnualMesDTO;
 import com.br.mefinance.dto.GastoDTO;
 import com.br.mefinance.dto.ResumoGastosDTO;
 import com.br.mefinance.entities.Categoria;
@@ -23,9 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,6 +111,49 @@ public class GastoService {
     public Page<GastoProjection> buscarGastosFiltrados(Long usuarioId, String descricao, Pageable pageable) {
         Page<GastoProjection> page = repository.buscarGastosFiltrados(usuarioId, descricao, pageable);
         return page;
+    }
+
+    @Transactional(readOnly = true)
+    public AnaliseAnualGastosDTO analisarAno(Long usuarioId, Integer ano, String termo) {
+        if (usuarioId == null || usuarioId <= 0) {
+            throw new RequisicaoInvalidaException("Usuário autenticado inválido.");
+        }
+        if (ano == null || ano < 2000 || ano > 2100) {
+            throw new RequisicaoInvalidaException("Informe um ano válido entre 2000 e 2100.");
+        }
+
+        String filtro = termo == null ? "" : termo.trim();
+        List<Gasto> gastos = repository.buscarParaAnaliseAnual(
+                usuarioId, ano * 100 + 1, ano * 100 + 12, filtro);
+
+        Map<Integer, List<Gasto>> gastosPorMes = gastos.stream()
+                .collect(Collectors.groupingBy(gasto -> gasto.getPeriodo() % 100));
+
+        List<AnaliseAnualMesDTO> meses = IntStream.rangeClosed(1, 12)
+                .mapToObj(mes -> {
+                    List<Gasto> gastosDoMes = gastosPorMes.getOrDefault(mes, List.of());
+                    return new AnaliseAnualMesDTO(
+                            mes,
+                            somarGastos(gastosDoMes),
+                            gastosDoMes.size());
+                })
+                .toList();
+
+        return new AnaliseAnualGastosDTO(
+                ano,
+                filtro,
+                somarGastos(gastos),
+                gastos.size(),
+                meses,
+                gastos.stream().map(GastoDTO::new).toList());
+    }
+
+    private BigDecimal somarGastos(List<Gasto> gastos) {
+        return gastos.stream()
+                .map(Gasto::getValor)
+                .filter(valor -> valor != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     public GastoDTO pagarGasto(Long id, Long userId) {

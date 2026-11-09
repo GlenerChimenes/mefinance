@@ -29,5 +29,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Faturas enviadas em tempo de execução
+/data/faturas/
+
 ### VS Code ###
 .vscode/
